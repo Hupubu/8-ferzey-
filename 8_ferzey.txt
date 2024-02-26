@@ -1,0 +1,78 @@
+#include <iostream>
+using namespace std;
+
+int board[8][8];
+
+void reQueen(int i, int j)
+{
+    for (int x = 0; x < 8; ++x)
+    {
+        --board[x][j];   // -горизонталь
+        --board[i][x];   // -диагональ
+        int k;
+        k = j - i + x;   // диагональ №1
+        if (k >= 0 && k < 8)
+            --board[x][k];
+        k = j + i - x;   // диагональ №2
+        if (k >= 0 && k < 8)
+            --board[x][k];
+    }
+    board[i][j] = 0;   // пустая клетка
+}
+
+void setQueen(int i, int j)
+{
+    for (int x = 0; x < 8; ++x)
+    {
+        ++board[x][j];  // +горизонталь
+        ++board[i][x];   // +диагональ
+        int k;
+        k = j - i + x;   // диагональ №1
+        if (k >= 0 && k < 8)
+            ++board[x][k];
+        k = j + i - x;   // диагональ №2
+        if (k >= 0 && k < 8)
+            ++board[x][k];
+    }
+    board[i][j] = -1;   // ферзь стоит 
+}
+
+bool tryQueen(int i)   // попытка поставить ферзя
+{
+    bool result = false;
+    for (int j = 0; j < 8; ++j)
+    {
+        if (board[i][j] == 0)   // если клетку не бьют
+        {
+            setQueen(i, j);   // ставим ферзя 
+            if (i == 7)   // если все ферзи стоят
+                result = true;   // попытка удалась
+            else
+            {
+                if (!(result = tryQueen(i + 1)))  // иначе ставим на следующий столбец
+                    reQueen(i, j);
+            }
+        }
+        if (result)
+            break;
+    }
+    return result;
+}
+int main()
+{
+    for (int i = 0; i < 8; ++i)
+        for (int j = 0; j < 8; ++j)
+            board[i][j] = 0;  // пустая доска 
+    tryQueen(0);   // начинаем с первой клетки
+    for (int i = 0; i < 8; ++i)
+    {
+        for (int j = 0; j < 8; ++j)
+        {
+            if (board[i][j] == -1)   // на клетке ферзь 
+                cout << " " << (char)3 << " ";
+            else
+                cout << " . ";  // пустая клетка
+        }
+        cout << endl;
+    }
+}
